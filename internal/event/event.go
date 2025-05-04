@@ -9,6 +9,7 @@ import (
 // EventID is used to determine the special event to happen.
 type EventID uint8
 
+// constants define possible events ids.
 const (
 	CompetitorRegistration     EventID = 1
 	StartTimeAssignment        EventID = 2
@@ -43,7 +44,7 @@ func ValidIncomingEventID(candidate uint8) bool {
 }
 
 // TimeFormat use to parse.
-const TimeFormat = "15:05:04.000"
+const TimeFormat = "15:04:05.000"
 
 // FormatTime according to TimeFormat.
 func (e Event) FormatTime() string {

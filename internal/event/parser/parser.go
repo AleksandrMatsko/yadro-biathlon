@@ -52,7 +52,12 @@ func ParseSingleLine(line string) (event.Event, error) {
 	split := strings.SplitN(line, " ", maxNumParts)
 
 	if len(split) < maxNumParts-1 {
-		return event.Event{}, fmt.Errorf("not enough arguments, expected at least 3, got %d", len(split))
+		argsCount := len(split)
+		if line == "" {
+			argsCount = 0
+		}
+
+		return event.Event{}, fmt.Errorf("not enough arguments, expected at least 3, got %d", argsCount)
 	}
 
 	parsedTime, err := ParseTime(strings.Trim(split[0], "[]"))
@@ -78,7 +83,7 @@ func ParseSingleLine(line string) (event.Event, error) {
 	}, nil
 }
 
-// ParseTime from given string into time.Time according to TimeFormat.
+// ParseTime from given string into time.Time according to event.TimeFormat.
 func ParseTime(s string) (time.Time, error) {
 	return time.Parse(event.TimeFormat, s)
 }
