@@ -1,0 +1,6 @@
+.vscode/
+.idea/
+
+*.exe*
+biathlon-reporter
+!cmd/biathlon-reporter
