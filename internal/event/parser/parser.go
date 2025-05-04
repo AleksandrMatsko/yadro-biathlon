@@ -47,7 +47,10 @@ const maxNumParts = 4
 
 // ParseSingleLine expect line to have such format:
 //
-// [HH:MM:SS.sss] eventID competitorID extra
+//	[HH:MM:SS.sss] eventID competitorID extra
+//
+// If there are less than 3 arguments or if values are invalid,
+// the error is returned.
 func ParseSingleLine(line string) (event.Event, error) {
 	split := strings.SplitN(line, " ", maxNumParts)
 
