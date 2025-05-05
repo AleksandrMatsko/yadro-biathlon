@@ -35,7 +35,7 @@ func (tt *totalTime) NotifyWithEvent(e event.Event) {
 		return
 	}
 
-	if tt.state == initial && e.ID == event.CompetitorDisqualified {
+	if (tt.state == initial || tt.state == running) && e.ID == event.CompetitorDisqualified {
 		tt.state = notStarted
 		return
 	}
@@ -50,11 +50,24 @@ func (tt *totalTime) NotifyWithEvent(e event.Event) {
 		tt.state = finished
 		return
 	}
+
+	if tt.state == running && e.ID == event.CompetitorCannotContinue {
+		tt.state = notFinished
+		return
+	}
 }
 
 func (tt *totalTime) GetTotalTime() (time.Duration, totalTimeState) {
 	if tt.state == finished {
 		return tt.end.Sub(tt.start), finished
+	}
+
+	if tt.state != notStarted && tt.state != notFinished {
+		if tt.state == running {
+			tt.state = notFinished
+		} else {
+			tt.state = notStarted
+		}
 	}
 
 	return 0, tt.state
