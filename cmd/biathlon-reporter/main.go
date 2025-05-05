@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/AleksandrMatsko/yadro-biathlon/internal/competition"
 	"github.com/AleksandrMatsko/yadro-biathlon/internal/config"
 	"github.com/AleksandrMatsko/yadro-biathlon/internal/event/parser"
+	"github.com/AleksandrMatsko/yadro-biathlon/internal/report"
 )
 
 var (
@@ -49,6 +51,13 @@ func makeReport() error {
 		return errNoEventsFile
 	}
 
+	reporter := report.NewReporter(conf)
+
+	biathlon, err := competition.NewBiathlon(conf, reporter)
+	if err != nil {
+		return fmt.Errorf("failed to create biathlon competition: %w", err)
+	}
+
 	file, err := os.Open(*incomingEventsFileName)
 	if err != nil {
 		return fmt.Errorf("open events file: %w", err)
@@ -61,13 +70,15 @@ func makeReport() error {
 			return fmt.Errorf("parsing file: %w", err)
 		}
 
-		fmt.Println(event)
+		biathlon.HandleEvent(event)
 	}
 
 	err = retErrFunc()
 	if err != nil {
 		return fmt.Errorf("reading file: %w", err)
 	}
+
+	fmt.Println(reporter.MakeReport())
 
 	return nil
 }

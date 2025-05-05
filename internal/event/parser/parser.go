@@ -78,6 +78,21 @@ func ParseSingleLine(line string) (event.Event, error) {
 		extra = split[3]
 	}
 
+	if extra != "" {
+		if eventID == event.StartTimeAssignment {
+			_, err := ParseTime(extra)
+			if err != nil {
+				return event.Event{}, fmt.Errorf("failed to parse timestamp in extra agument: %w", err)
+			}
+		}
+
+		if eventID == event.TargetHit {
+			if _, ok := event.AvailableTargets[extra]; !ok {
+				return event.Event{}, fmt.Errorf("bad target %s", extra)
+			}
+		}
+	}
+
 	return event.Event{
 		Time:         parsedTime,
 		ID:           eventID,

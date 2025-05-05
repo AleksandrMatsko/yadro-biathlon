@@ -15,6 +15,7 @@ func (report Report) String() string {
 
 	for _, record := range report {
 		_, _ = builder.WriteString(record.String())
+		_, _ = builder.WriteString("\n")
 	}
 
 	return builder.String()

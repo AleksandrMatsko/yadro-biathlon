@@ -23,7 +23,7 @@ type totalTime struct {
 	end   time.Time
 }
 
-func NewTotalTime() *totalTime {
+func newTotalTime() *totalTime {
 	return &totalTime{
 		state: initial,
 	}

@@ -1,4 +1,4 @@
-package report
+package competition
 
 import (
 	"fmt"
@@ -8,6 +8,10 @@ import (
 
 type Logger struct{}
 
-func (*Logger) NotifyWithEvent(e event.Event) {
+func NewLogger() *Logger {
+	return &Logger{}
+}
+
+func (l *Logger) NotifyWithEvent(e event.Event) {
 	fmt.Println(e)
 }

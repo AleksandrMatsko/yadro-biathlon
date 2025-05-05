@@ -87,3 +87,11 @@ func (e Event) String() string {
 
 	return formattedTime + eventMsg
 }
+
+var AvailableTargets = map[string]struct{}{
+	"1": {},
+	"2": {},
+	"3": {},
+	"4": {},
+	"5": {},
+}
