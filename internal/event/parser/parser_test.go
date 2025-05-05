@@ -189,4 +189,22 @@ func TestParseSingleLine(t *testing.T) {
 			assert.Equal(t, err, fmt.Errorf("failed to parse event id: %w", fmt.Errorf("invalid event id: 0")))
 		})
 	})
+
+	t.Run("with bad extra", func(t *testing.T) {
+		t.Parallel()
+
+		t.Run("unparseable scheduled time", func(t *testing.T) {
+			gotEvent, err := ParseSingleLine("[09:05:59.867] 2 1 hello")
+
+			assert.Equal(t, event.Event{}, gotEvent)
+			assert.NotNil(t, err)
+		})
+
+		t.Run("with bad target", func(t *testing.T) {
+			gotEvent, err := ParseSingleLine("[09:05:59.867] 6 1 hello")
+
+			assert.Equal(t, event.Event{}, gotEvent)
+			assert.Equal(t, fmt.Errorf("bad target: hello"), err)
+		})
+	})
 }

@@ -6,14 +6,17 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/AleksandrMatsko/yadro-biathlon/internal/competition"
 	"github.com/AleksandrMatsko/yadro-biathlon/internal/config"
 	"github.com/AleksandrMatsko/yadro-biathlon/internal/event/parser"
+	"github.com/AleksandrMatsko/yadro-biathlon/internal/report"
 )
 
 var (
 	configFileNameFlag     = flag.String("config", "", "Path to configuration file")
 	printConfigFlag        = flag.Bool("print-config", false, "Print current config to stdout")
 	incomingEventsFileName = flag.String("events", "", "Path to events file")
+	reportFilePathFlag     = flag.String("report", "report.txt", "Path of file to save report")
 )
 
 var (
@@ -49,6 +52,13 @@ func makeReport() error {
 		return errNoEventsFile
 	}
 
+	reporter := report.NewReporter(conf)
+
+	biathlon, err := competition.NewBiathlon(conf, reporter)
+	if err != nil {
+		return fmt.Errorf("failed to create biathlon competition: %w", err)
+	}
+
 	file, err := os.Open(*incomingEventsFileName)
 	if err != nil {
 		return fmt.Errorf("open events file: %w", err)
@@ -61,13 +71,24 @@ func makeReport() error {
 			return fmt.Errorf("parsing file: %w", err)
 		}
 
-		fmt.Println(event)
+		biathlon.HandleEvent(event)
 	}
 
 	err = retErrFunc()
 	if err != nil {
 		return fmt.Errorf("reading file: %w", err)
 	}
+
+	report := reporter.MakeReport()
+	report.Sort()
+
+	reportFile, err := os.OpenFile(*reportFilePathFlag, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0o666)
+	if err != nil {
+		return fmt.Errorf("open file for report: '%s': %w", *incomingEventsFileName, err)
+	}
+	defer reportFile.Close()
+
+	fmt.Fprint(reportFile, report)
 
 	return nil
 }

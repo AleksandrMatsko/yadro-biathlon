@@ -4,3 +4,5 @@
 *.exe*
 biathlon-reporter
 !cmd/biathlon-reporter
+
+report.txt
