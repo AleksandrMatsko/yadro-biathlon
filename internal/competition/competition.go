@@ -19,14 +19,13 @@ func NewBiathlon(conf config.BiathlonCompetition, observer Observer) (*Biathlon,
 	}
 
 	composed := NewComposed().
-		AddObserver(NewLogger()).
-		AddObserver(observer)
+		AddObservers(NewLogger(), observer)
 
 	referees := NewReferees(rules, composed)
 
 	return &Biathlon{
 		rules:    rules,
-		observer: composed.AddObserver(referees),
+		observer: composed.AddObservers(referees),
 	}, nil
 }
 

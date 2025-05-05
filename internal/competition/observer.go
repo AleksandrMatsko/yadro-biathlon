@@ -13,7 +13,9 @@ type Composed struct {
 }
 
 func NewComposed() *Composed {
-	return &Composed{}
+	return &Composed{
+		observers: make([]Observer, 0),
+	}
 }
 
 func (c *Composed) NotifyWithEvent(e event.Event) {
@@ -22,7 +24,7 @@ func (c *Composed) NotifyWithEvent(e event.Event) {
 	}
 }
 
-func (c *Composed) AddObserver(observer Observer) *Composed {
-	c.observers = append(c.observers, observer)
+func (c *Composed) AddObservers(observer ...Observer) *Composed {
+	c.observers = append(c.observers, observer...)
 	return c
 }

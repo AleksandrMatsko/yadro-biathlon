@@ -29,8 +29,9 @@ func (r *Referees) NotifyWithEvent(e event.Event) {
 
 	if e.ID == event.CompetitorRegistration {
 		obs = NewComposed().
-			AddObserver(newWatchStartReferee(r.root, r.rules.MaxStartDelta)).
-			AddObserver(newWatchFinishReferee(r.root, r.rules.Laps))
+			AddObservers(
+				newWatchStartReferee(r.root, r.rules.MaxStartDelta),
+				newWatchFinishReferee(r.root, r.rules.Laps))
 		r.competitorReferees[e.CompetitorID] = obs
 	}
 

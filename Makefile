@@ -17,3 +17,7 @@ install-lint:
 .PHONY: lint
 lint:
 	golangci-lint run
+
+.PHONY: mock
+mock:
+	./scripts/generate_mocks.sh
