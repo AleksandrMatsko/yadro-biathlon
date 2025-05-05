@@ -17,19 +17,19 @@ const (
 	finished    totalTimeState = "Finished"
 )
 
-type totalTime struct {
+type totalTimeReporter struct {
 	state totalTimeState
 	start time.Time
 	end   time.Time
 }
 
-func newTotalTime() *totalTime {
-	return &totalTime{
+func newTotalTime() *totalTimeReporter {
+	return &totalTimeReporter{
 		state: initial,
 	}
 }
 
-func (tt *totalTime) NotifyWithEvent(e event.Event) {
+func (tt *totalTimeReporter) NotifyWithEvent(e event.Event) {
 	if tt.state == initial && e.ID == event.StartTimeAssignment {
 		tt.start, _ = parser.ParseTime(e.Extra)
 		return
@@ -57,7 +57,7 @@ func (tt *totalTime) NotifyWithEvent(e event.Event) {
 	}
 }
 
-func (tt *totalTime) GetTotalTime() (time.Duration, totalTimeState) {
+func (tt *totalTimeReporter) GetTotalTime() (time.Duration, totalTimeState) {
 	if tt.state == finished {
 		return tt.end.Sub(tt.start), finished
 	}

@@ -8,22 +8,23 @@ import (
 	"github.com/AleksandrMatsko/yadro-biathlon/internal/event/parser"
 )
 
-type lapsTime struct {
+type lapsTimeReporter struct {
 	lapsCompleted uint32
 	lapStart      time.Time
 	lapLen        uint32
 	lapTimes      []time.Duration
+	stop          bool
 }
 
-func newLapsTime(laps uint32, lapLen uint32) *lapsTime {
-	return &lapsTime{
+func newLapsTime(laps uint32, lapLen uint32) *lapsTimeReporter {
+	return &lapsTimeReporter{
 		lapsCompleted: 0,
 		lapLen:        lapLen,
 		lapTimes:      make([]time.Duration, laps),
 	}
 }
 
-func (lt *lapsTime) NotifyWithEvent(e event.Event) {
+func (lt *lapsTimeReporter) NotifyWithEvent(e event.Event) {
 	if lt.lapsCompleted == uint32(len(lt.lapTimes)) {
 		return
 	}
@@ -42,6 +43,10 @@ func (lt *lapsTime) NotifyWithEvent(e event.Event) {
 
 		return
 	}
+
+	if e.ID == event.CompetitorDisqualified || e.ID == event.CompetitorCannotContinue {
+		lt.stop = true
+	}
 }
 
 type mainLapInfo struct {
@@ -57,7 +62,7 @@ func (info mainLapInfo) String() string {
 	return fmt.Sprintf("{%s, %.3f}", formatDuration(info.Interval), info.Speed)
 }
 
-func (lt *lapsTime) GetLapTimesAndSpeed() []mainLapInfo {
+func (lt *lapsTimeReporter) GetLapTimesAndSpeed() []mainLapInfo {
 	result := make([]mainLapInfo, len(lt.lapTimes))
 	for i, interval := range lt.lapTimes {
 		if interval == 0 {

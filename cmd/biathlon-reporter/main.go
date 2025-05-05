@@ -16,6 +16,7 @@ var (
 	configFileNameFlag     = flag.String("config", "", "Path to configuration file")
 	printConfigFlag        = flag.Bool("print-config", false, "Print current config to stdout")
 	incomingEventsFileName = flag.String("events", "", "Path to events file")
+	reportFilePathFlag     = flag.String("report", "report.txt", "Path of file to save report")
 )
 
 var (
@@ -81,7 +82,13 @@ func makeReport() error {
 	report := reporter.MakeReport()
 	report.Sort()
 
-	fmt.Println(report)
+	reportFile, err := os.OpenFile(*reportFilePathFlag, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0666)
+	if err != nil {
+		return fmt.Errorf("open file for report: '%s': %w", *incomingEventsFileName, err)
+	}
+	defer reportFile.Close()
+
+	fmt.Fprint(reportFile, report)
 
 	return nil
 }

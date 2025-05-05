@@ -48,20 +48,23 @@ func (r *Reporter) MakeReport() Report {
 }
 
 type competitorReporter struct {
-	totalTime *totalTime
-	lapsTime  *lapsTime
+	totalTime *totalTimeReporter
+	lapsTime  *lapsTimeReporter
+	shooting  *shootingReporter
 }
 
 func newCompetitorReporter(conf config.BiathlonCompetition) *competitorReporter {
 	return &competitorReporter{
 		totalTime: newTotalTime(),
 		lapsTime:  newLapsTime(conf.Laps, conf.LapLen),
+		shooting:  newShootingReporter(conf.FiringLines, conf.PenaltyLen),
 	}
 }
 
 func (cr *competitorReporter) NotifyWithEvent(e event.Event) {
 	cr.totalTime.NotifyWithEvent(e)
 	cr.lapsTime.NotifyWithEvent(e)
+	cr.shooting.NotifyWithEvent(e)
 }
 
 func (cr *competitorReporter) createRecord() reportRecord {
@@ -69,6 +72,7 @@ func (cr *competitorReporter) createRecord() reportRecord {
 
 	record.totalTime, record.finalState = cr.totalTime.GetTotalTime()
 	record.mainLapsInfo = cr.lapsTime.GetLapTimesAndSpeed()
+	record.shootingInfo = cr.shooting.GetInfo()
 
 	return record
 }

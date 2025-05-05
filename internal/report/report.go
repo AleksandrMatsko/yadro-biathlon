@@ -63,6 +63,7 @@ type reportRecord struct {
 	finalState   totalTimeState
 	competitorID string
 	mainLapsInfo []mainLapInfo
+	shootingInfo shootingInfo
 }
 
 func (rr reportRecord) String() string {
@@ -76,10 +77,11 @@ func (rr reportRecord) String() string {
 		mainLapInfoStrings = append(mainLapInfoStrings, info.String())
 	}
 
-	return fmt.Sprintf("[%s] %s [%s]",
+	return fmt.Sprintf("[%s] %s [%s] %s",
 		totalTimeValue,
 		rr.competitorID,
 		strings.Join(mainLapInfoStrings, ", "),
+		rr.shootingInfo,
 	)
 }
 
