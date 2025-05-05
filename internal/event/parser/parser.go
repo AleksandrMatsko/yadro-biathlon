@@ -88,7 +88,7 @@ func ParseSingleLine(line string) (event.Event, error) {
 
 		if eventID == event.TargetHit {
 			if _, ok := event.AvailableTargets[extra]; !ok {
-				return event.Event{}, fmt.Errorf("bad target %s", extra)
+				return event.Event{}, fmt.Errorf("bad target: %s", extra)
 			}
 		}
 	}
