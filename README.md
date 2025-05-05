@@ -32,18 +32,18 @@ This will create `biathlon-reporter` executable. Run it with proper command line
 # Inconsistencies and omissions
 
 Unfortunately during task completion I have found some inconsistencies between task condintions and given examples. 
-All mistamtchs listed below were found in task version located in [`task` directory](task/README.md)
+All mismatchs listed below were found in task version located in [`task` directory](task/README.md)
 
 ## Firing lines
 
-According to task description `firingLines` field in configuration file is the number of firing lines **per** lap. 
-But in the [example events](task/sunny_5_skiers/events) given with task description `firingLines` is the total number of firing lines.
+According to task description, `firingLines` field in configuration file is the number of firing lines **per** lap. 
+But in the [example events](task/sunny_5_skiers/events) given with task description, `firingLines` is the total number of firing lines.
 
 I've decided to use `firingLines` as total number of firing lines.
 
 ## Calculating times and speed
 
-Unfortunately there is no clear explanation about calculating the times. So here are the rules I'm using:
+Unfortunately there is no clear explanation about calculating the times and other parameters. So here are the rules I'm using:
 
 ### Total time
 
@@ -51,7 +51,7 @@ If the competitor has finished, it is time interval between:
 - scheduled start time
 - timestamp of ending the last lap
 
-Otherwise: **NotFinished**
+Otherwise if competitor succefully started: **NotFinished**, else **NotStarted**
 
 ### Penalty lap time
 
@@ -61,7 +61,8 @@ Sum of time intervals between:
 
 ### Average speed over penalty laps
 
-It is `(Penalty lap time) / (penaltyLapsCount * penaltyLen)`
+It is `(penaltyLapsCount * penaltyLen) / (Penalty lap time)`
+(or zero if **Penalty lap time** is zero).
 
 ### Main lap time
 
@@ -77,7 +78,7 @@ For other laps:
 
 ### Average speed for each main lap
 
-It is `(Main lap time) / lapLen`
+It is `lapLen / (Main lap time)`
 
 
 
