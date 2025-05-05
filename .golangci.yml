@@ -57,6 +57,7 @@ linters:
         - "0755"
         - "0644"
         - "0666"
+        - "0o666"
     unparam:
       check-exported: false
   exclusions:

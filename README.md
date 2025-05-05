@@ -25,6 +25,10 @@ This will create `biathlon-reporter` executable. Run it with proper command line
 
 > Required. Path to file with incoming events.
 
+`--report`
+
+> Optional. Path to file to save report. Default is `report.txt`.
+
 # Inconsistencies and omissions
 
 Unfortunately during task completion I have found some inconsistencies between task condintions and given examples. 

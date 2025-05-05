@@ -55,8 +55,8 @@ type competitorReporter struct {
 
 func newCompetitorReporter(conf config.BiathlonCompetition) *competitorReporter {
 	return &competitorReporter{
-		totalTime: newTotalTime(),
-		lapsTime:  newLapsTime(conf.Laps, conf.LapLen),
+		totalTime: newTotalTimeReporter(),
+		lapsTime:  newLapsTimeReporter(conf.Laps, conf.LapLen),
 		shooting:  newShootingReporter(conf.FiringLines, conf.PenaltyLen),
 	}
 }

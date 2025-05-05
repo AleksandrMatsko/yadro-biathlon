@@ -82,7 +82,7 @@ func makeReport() error {
 	report := reporter.MakeReport()
 	report.Sort()
 
-	reportFile, err := os.OpenFile(*reportFilePathFlag, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0666)
+	reportFile, err := os.OpenFile(*reportFilePathFlag, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0o666)
 	if err != nil {
 		return fmt.Errorf("open file for report: '%s': %w", *incomingEventsFileName, err)
 	}

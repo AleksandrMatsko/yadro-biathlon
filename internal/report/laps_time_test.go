@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_lapsTime(t *testing.T) {
+func Test_lapsTimeReporter(t *testing.T) {
 	const (
 		lapsCount uint32 = 3
 		lapLen    uint32 = 1000
@@ -30,7 +30,7 @@ func Test_lapsTime(t *testing.T) {
 	t.Run("with all laps completed", func(t *testing.T) {
 		t.Parallel()
 
-		lt := newLapsTime(lapsCount-1, lapLen)
+		lt := newLapsTimeReporter(lapsCount-1, lapLen)
 
 		lt.NotifyWithEvent(event.Event{
 			ID:    event.StartTimeAssignment,
@@ -61,7 +61,7 @@ func Test_lapsTime(t *testing.T) {
 
 		completedLaps := 1
 
-		lt := newLapsTime(lapsCount, lapLen)
+		lt := newLapsTimeReporter(lapsCount, lapLen)
 
 		lt.NotifyWithEvent(event.Event{
 			ID:    event.StartTimeAssignment,
@@ -90,7 +90,7 @@ func Test_lapsTime(t *testing.T) {
 	t.Run("with more laps completed", func(t *testing.T) {
 		t.Parallel()
 
-		lt := newLapsTime(lapsCount-1, lapLen)
+		lt := newLapsTimeReporter(lapsCount-1, lapLen)
 
 		lt.NotifyWithEvent(event.Event{
 			ID:    event.StartTimeAssignment,
@@ -105,6 +105,39 @@ func Test_lapsTime(t *testing.T) {
 
 		expected := make([]mainLapInfo, lapsCount-1)
 		for i := range expected {
+			expected[i] = mainLapInfo{
+				Interval: intervals[i],
+				Speed:    float64(lapLen) / intervals[i].Seconds(),
+			}
+		}
+
+		got := lt.GetLapTimesAndSpeed()
+
+		assert.Equal(t, expected, got)
+	})
+
+	t.Run("when competitor stopped", func(t *testing.T) {
+		t.Parallel()
+
+		completedLaps := 2
+
+		lt := newLapsTimeReporter(lapsCount, lapLen)
+
+		lt.NotifyWithEvent(event.Event{
+			ID:    event.StartTimeAssignment,
+			Extra: startTime.Format(event.TimeFormat),
+		})
+		for i := range completedLaps {
+			lt.NotifyWithEvent(event.Event{
+				Time: lapEnds[i],
+				ID:   event.CompetitorEndedMainLap,
+			})
+		}
+
+		lt.NotifyWithEvent(event.Event{ID: event.CompetitorCannotContinue})
+
+		expected := make([]mainLapInfo, len(intervals))
+		for i := range completedLaps {
 			expected[i] = mainLapInfo{
 				Interval: intervals[i],
 				Speed:    float64(lapLen) / intervals[i].Seconds(),

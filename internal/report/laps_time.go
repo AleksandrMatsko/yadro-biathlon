@@ -16,7 +16,7 @@ type lapsTimeReporter struct {
 	stop          bool
 }
 
-func newLapsTime(laps uint32, lapLen uint32) *lapsTimeReporter {
+func newLapsTimeReporter(laps uint32, lapLen uint32) *lapsTimeReporter {
 	return &lapsTimeReporter{
 		lapsCompleted: 0,
 		lapLen:        lapLen,

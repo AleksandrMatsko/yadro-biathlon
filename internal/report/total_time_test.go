@@ -8,11 +8,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_totalTime(t *testing.T) {
+func Test_totalTimeReporter(t *testing.T) {
 	t.Run("when competitor finished", func(t *testing.T) {
 		t.Parallel()
 
-		tt := newTotalTime()
+		tt := newTotalTimeReporter()
 
 		tt.NotifyWithEvent(event.Event{
 			ID:    event.StartTimeAssignment,
@@ -33,7 +33,7 @@ func Test_totalTime(t *testing.T) {
 		t.Parallel()
 
 		t.Run("disqualified after competitor start", func(t *testing.T) {
-			tt := newTotalTime()
+			tt := newTotalTimeReporter()
 
 			tt.NotifyWithEvent(event.Event{
 				ID:    event.StartTimeAssignment,
@@ -52,7 +52,7 @@ func Test_totalTime(t *testing.T) {
 		})
 
 		t.Run("disqualified before competitor start", func(t *testing.T) {
-			tt := newTotalTime()
+			tt := newTotalTimeReporter()
 
 			tt.NotifyWithEvent(event.Event{
 				ID:    event.StartTimeAssignment,
@@ -74,7 +74,7 @@ func Test_totalTime(t *testing.T) {
 	t.Run("when competitor can't continue", func(t *testing.T) {
 		t.Parallel()
 
-		tt := newTotalTime()
+		tt := newTotalTimeReporter()
 
 		tt.NotifyWithEvent(event.Event{
 			ID:    event.StartTimeAssignment,
@@ -96,7 +96,7 @@ func Test_totalTime(t *testing.T) {
 		t.Parallel()
 
 		t.Run("competitor has started", func(t *testing.T) {
-			tt := newTotalTime()
+			tt := newTotalTimeReporter()
 
 			tt.NotifyWithEvent(event.Event{
 				ID:    event.StartTimeAssignment,
@@ -110,7 +110,7 @@ func Test_totalTime(t *testing.T) {
 		})
 
 		t.Run("competitor has not started", func(t *testing.T) {
-			tt := newTotalTime()
+			tt := newTotalTimeReporter()
 
 			tt.NotifyWithEvent(event.Event{
 				ID:    event.StartTimeAssignment,

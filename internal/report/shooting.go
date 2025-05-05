@@ -49,14 +49,38 @@ func (s *shootingReporter) NotifyWithEvent(e event.Event) {
 		return
 	}
 
-	if s.state == runningMainLap && e.ID == event.CompetitorOnFiringRange && s.completedShootings < s.firingLinesCount {
+	if e.ID == event.CompetitorCannotContinue || e.ID == event.CompetitorDisqualified || e.ID == event.CompetitorFinished {
+		s.state = ended
+		return
+	}
+
+	switch s.state {
+	case runningMainLap:
+		s.onRunningMainLap(e)
+	case shooting:
+		s.onShooting(e)
+	case runningPenaltyLaps:
+		s.onRunningPenaltyLaps(e)
+	}
+}
+
+func (s *shootingReporter) onRunningMainLap(e event.Event) {
+	if e.ID == event.CompetitorOnFiringRange && s.completedShootings < s.firingLinesCount {
 		clear(s.hitTargetsOnCurrentFireRange)
 		s.state = shooting
 		s.penaltyLapToPerformAfterShooting = uint8(len(event.AvailableTargets))
 		return
 	}
 
-	if s.state == shooting && e.ID == event.TargetHit {
+	if e.ID == event.CompetitorEnterPenaltyLaps {
+		s.enterPenaltyLap = e.Time
+		s.state = runningPenaltyLaps
+		return
+	}
+}
+
+func (s *shootingReporter) onShooting(e event.Event) {
+	if e.ID == event.TargetHit {
 		if _, ok := s.hitTargetsOnCurrentFireRange[e.Extra]; !ok {
 			s.hitTargetsOnCurrentFireRange[e.Extra] = struct{}{}
 			s.totalNumberOfHitTarges += 1
@@ -66,29 +90,21 @@ func (s *shootingReporter) NotifyWithEvent(e event.Event) {
 		return
 	}
 
-	if s.state == shooting && e.ID == event.CompetitorLeftFiringRange {
+	if e.ID == event.CompetitorLeftFiringRange {
 		s.completedShootings += 1
 		s.state = runningMainLap
 		return
 	}
+}
 
-	if s.state == runningMainLap && e.ID == event.CompetitorEnterPenaltyLaps {
-		s.enterPenaltyLap = e.Time
-		s.state = runningPenaltyLaps
-		return
-	}
-
-	if s.state == runningPenaltyLaps && e.ID == event.CompetitorLeftPenaltyLaps {
+func (s *shootingReporter) onRunningPenaltyLaps(e event.Event) {
+	if e.ID == event.CompetitorLeftPenaltyLaps {
 		s.totalPenaltyLapCount += uint32(s.penaltyLapToPerformAfterShooting)
 		s.penaltyLapToPerformAfterShooting = 0
 		s.timeSpentOnPenaltyLaps += e.Time.Sub(s.enterPenaltyLap)
 
 		s.state = runningMainLap
 		return
-	}
-
-	if e.ID == event.CompetitorCannotContinue || e.ID == event.CompetitorDisqualified || e.ID == event.CompetitorFinished {
-		s.state = ended
 	}
 }
 

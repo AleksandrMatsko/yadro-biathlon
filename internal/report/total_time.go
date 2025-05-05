@@ -23,7 +23,7 @@ type totalTimeReporter struct {
 	end   time.Time
 }
 
-func newTotalTime() *totalTimeReporter {
+func newTotalTimeReporter() *totalTimeReporter {
 	return &totalTimeReporter{
 		state: initial,
 	}
