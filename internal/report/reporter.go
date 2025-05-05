@@ -5,11 +5,13 @@ import (
 	"github.com/AleksandrMatsko/yadro-biathlon/internal/event"
 )
 
+// Reporter is used to create Report with aggregated data based on occurred events.
 type Reporter struct {
 	conf      config.BiathlonCompetition
 	reporters map[string]*competitorReporter
 }
 
+// NewReporter creates new Reporter.
 func NewReporter(conf config.BiathlonCompetition) *Reporter {
 	return &Reporter{
 		conf:      conf,
@@ -17,6 +19,7 @@ func NewReporter(conf config.BiathlonCompetition) *Reporter {
 	}
 }
 
+// NotifyWithEvent implements competition.Observer interface, to observe incoming events.
 func (r *Reporter) NotifyWithEvent(incomingEvent event.Event) {
 	reporter, ok := r.reporters[incomingEvent.CompetitorID]
 	if !ok && incomingEvent.ID != event.CompetitorRegistration {
@@ -24,13 +27,14 @@ func (r *Reporter) NotifyWithEvent(incomingEvent event.Event) {
 	}
 
 	if incomingEvent.ID == event.CompetitorRegistration {
-		reporter = newCompetitorReporter()
+		reporter = newCompetitorReporter(r.conf)
 		r.reporters[incomingEvent.CompetitorID] = reporter
 	}
 
 	reporter.NotifyWithEvent(incomingEvent)
 }
 
+// MakeReport creates report from previously observed events.
 func (r *Reporter) MakeReport() Report {
 	records := make([]reportRecord, 0, len(r.reporters))
 	for competitorID, reporter := range r.reporters {
@@ -45,22 +49,26 @@ func (r *Reporter) MakeReport() Report {
 
 type competitorReporter struct {
 	totalTime *totalTime
+	lapsTime  *lapsTime
 }
 
-func newCompetitorReporter() *competitorReporter {
+func newCompetitorReporter(conf config.BiathlonCompetition) *competitorReporter {
 	return &competitorReporter{
 		totalTime: newTotalTime(),
+		lapsTime:  newLapsTime(conf.Laps, conf.LapLen),
 	}
 }
 
 func (cr *competitorReporter) NotifyWithEvent(e event.Event) {
 	cr.totalTime.NotifyWithEvent(e)
+	cr.lapsTime.NotifyWithEvent(e)
 }
 
 func (cr *competitorReporter) createRecord() reportRecord {
 	record := reportRecord{}
 
 	record.totalTime, record.finalState = cr.totalTime.GetTotalTime()
+	record.mainLapsInfo = cr.lapsTime.GetLapTimesAndSpeed()
 
 	return record
 }

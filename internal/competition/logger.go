@@ -6,12 +6,12 @@ import (
 	"github.com/AleksandrMatsko/yadro-biathlon/internal/event"
 )
 
-type Logger struct{}
+type logger struct{}
 
-func NewLogger() *Logger {
-	return &Logger{}
+func newLogger() *logger {
+	return &logger{}
 }
 
-func (l *Logger) NotifyWithEvent(e event.Event) {
+func (l *logger) NotifyWithEvent(e event.Event) {
 	fmt.Println(e)
 }

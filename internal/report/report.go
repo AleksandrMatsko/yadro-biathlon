@@ -9,8 +9,15 @@ import (
 	"github.com/AleksandrMatsko/yadro-biathlon/internal/event"
 )
 
+// Report is list of aggregated data by competitor.
 type Report []reportRecord
 
+// String formats Report and return it as string.
+// Each line in the returned string is related to unique competitor.
+// Examples of formatter lines (if there were 2 laps in the race and 2 firing ranges):
+//
+//	[00:44:51.123] 1 [{00:22:20.100, 2.2}, {00:22:31.023, 1.9}] {00:01:25.467, 0.496} 8/10
+//	[NotFinished] 2 [{00:29:03.872, 2.093}, {,}] {00:01:44.296, 0.481} 4/10
 func (report Report) String() string {
 	builder := strings.Builder{}
 
@@ -22,6 +29,7 @@ func (report Report) String() string {
 	return builder.String()
 }
 
+// Sort Report records by competitors' total time.
 func (report Report) Sort() {
 	slices.SortFunc(report, func(first, second reportRecord) int {
 		if first.finalState != second.finalState {
@@ -54,14 +62,28 @@ type reportRecord struct {
 	totalTime    time.Duration
 	finalState   totalTimeState
 	competitorID string
+	mainLapsInfo []mainLapInfo
 }
 
 func (rr reportRecord) String() string {
 	totalTimeValue := string(rr.finalState)
 	if rr.finalState == finished {
-		timeVal := time.Date(0, time.January, 1, 0, 0, 0, 0, time.UTC).Add(rr.totalTime)
-		totalTimeValue = timeVal.Format(event.TimeFormat)
+		totalTimeValue = formatDuration(rr.totalTime)
 	}
 
-	return fmt.Sprintf("[%s] %s", totalTimeValue, rr.competitorID)
+	mainLapInfoStrings := make([]string, 0, len(rr.mainLapsInfo))
+	for _, info := range rr.mainLapsInfo {
+		mainLapInfoStrings = append(mainLapInfoStrings, info.String())
+	}
+
+	return fmt.Sprintf("[%s] %s [%s]",
+		totalTimeValue,
+		rr.competitorID,
+		strings.Join(mainLapInfoStrings, ", "),
+	)
+}
+
+func formatDuration(d time.Duration) string {
+	timeVal := time.Date(0, time.January, 1, 0, 0, 0, 0, time.UTC).Add(d)
+	return timeVal.Format(event.TimeFormat)
 }

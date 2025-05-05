@@ -7,21 +7,21 @@ import (
 	"github.com/AleksandrMatsko/yadro-biathlon/internal/event/parser"
 )
 
-type Referees struct {
+type referees struct {
 	rules              rules
 	root               Observer
 	competitorReferees map[string]Observer
 }
 
-func NewReferees(rules rules, rootObserver Observer) *Referees {
-	return &Referees{
+func newReferees(rules rules, rootObserver Observer) *referees {
+	return &referees{
 		rules:              rules,
 		root:               rootObserver,
 		competitorReferees: make(map[string]Observer),
 	}
 }
 
-func (r *Referees) NotifyWithEvent(e event.Event) {
+func (r *referees) NotifyWithEvent(e event.Event) {
 	obs, ok := r.competitorReferees[e.CompetitorID]
 	if !ok && e.ID != event.CompetitorRegistration {
 		return
