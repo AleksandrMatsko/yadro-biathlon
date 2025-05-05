@@ -13,7 +13,7 @@ type Biathlon struct {
 }
 
 func NewBiathlon(conf config.BiathlonCompetition, observer Observer) (*Biathlon, error) {
-	rules, err := fromConfig(conf)
+	competitionRules, err := fromConfig(conf)
 	if err != nil {
 		return nil, fmt.Errorf("bad config %w", err)
 	}
@@ -21,10 +21,10 @@ func NewBiathlon(conf config.BiathlonCompetition, observer Observer) (*Biathlon,
 	composed := NewComposed().
 		AddObservers(NewLogger(), observer)
 
-	referees := NewReferees(rules, composed)
+	referees := NewReferees(competitionRules, composed)
 
 	return &Biathlon{
-		rules:    rules,
+		rules:    competitionRules,
 		observer: composed.AddObservers(referees),
 	}, nil
 }

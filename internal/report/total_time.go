@@ -10,11 +10,11 @@ import (
 type totalTimeState string
 
 const (
-	initial    totalTimeState = "Initial"
-	running    totalTimeState = "Running"
-	notStarted totalTimeState = "NotStarted"
-	notFinised totalTimeState = "NotFinished"
-	finished   totalTimeState = "Finished"
+	initial     totalTimeState = "Initial"
+	running     totalTimeState = "Running"
+	notStarted  totalTimeState = "NotStarted"
+	notFinished totalTimeState = "NotFinished"
+	finished    totalTimeState = "Finished"
 )
 
 type totalTime struct {

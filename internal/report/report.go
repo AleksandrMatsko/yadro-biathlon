@@ -2,6 +2,7 @@ package report
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -19,6 +20,34 @@ func (report Report) String() string {
 	}
 
 	return builder.String()
+}
+
+func (report Report) Sort() {
+	slices.SortFunc(report, func(first, second reportRecord) int {
+		if first.finalState != second.finalState {
+			if first.finalState == notStarted {
+				return -1
+			}
+
+			if second.finalState == notStarted {
+				return 1
+			}
+
+			if first.finalState == notFinished {
+				return 1
+			}
+
+			if second.finalState == notFinished {
+				return -1
+			}
+		}
+
+		if first.finalState == second.finalState && first.finalState == finished {
+			return int(first.totalTime - second.totalTime)
+		}
+
+		return strings.Compare(first.competitorID, second.competitorID)
+	})
 }
 
 type reportRecord struct {

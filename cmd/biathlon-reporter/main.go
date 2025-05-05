@@ -78,7 +78,10 @@ func makeReport() error {
 		return fmt.Errorf("reading file: %w", err)
 	}
 
-	fmt.Println(reporter.MakeReport())
+	report := reporter.MakeReport()
+	report.Sort()
+
+	fmt.Println(report)
 
 	return nil
 }
