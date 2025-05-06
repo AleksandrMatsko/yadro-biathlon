@@ -8,7 +8,7 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func TestComposed(t *testing.T) {
+func Test_ComposedObserver(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -19,7 +19,7 @@ func TestComposed(t *testing.T) {
 		mock_observer.NewMockObserver(mockCtrl),
 	}
 
-	composed := NewComposed()
+	composed := NewComposedObserver()
 
 	composed.NotifyWithEvent(event.Event{})
 
@@ -30,6 +30,14 @@ func TestComposed(t *testing.T) {
 	composed.NotifyWithEvent(event.Event{})
 
 	composed.AddObservers(mockObservers[1], mockObservers[2], mockObservers[3])
+
+	for i := range mockObservers {
+		mockObservers[i].EXPECT().NotifyWithEvent(event.Event{}).Times(1)
+	}
+
+	composed.NotifyWithEvent(event.Event{})
+
+	composed.AddObservers(nil)
 
 	for i := range mockObservers {
 		mockObservers[i].EXPECT().NotifyWithEvent(event.Event{}).Times(1)

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestReport_String(t *testing.T) {
+func Test_Report_String(t *testing.T) {
 	givenReport := Report([]reportRecord{
 		{
 			totalTime:    time.Minute*1 + time.Second*2 + time.Millisecond*345,

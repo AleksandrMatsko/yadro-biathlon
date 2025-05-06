@@ -10,7 +10,7 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func Test_watchStartReferee(t *testing.T) {
+func Test_observeStartReferee(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -33,14 +33,14 @@ func Test_watchStartReferee(t *testing.T) {
 			ID:   event.CompetitorStarted,
 		}
 
-		referee := newWatchStartReferee(rootObserver, maxStartDelta)
+		referee := newObserverStartReferee(rootObserver, maxStartDelta)
 
 		referee.NotifyWithEvent(startAssignEvent)
 		referee.NotifyWithEvent(competitorStartedEvent)
 
 		maxStartDelta = time.Second
 
-		referee = newWatchStartReferee(rootObserver, maxStartDelta)
+		referee = newObserverStartReferee(rootObserver, maxStartDelta)
 
 		referee.NotifyWithEvent(startAssignEvent)
 		referee.NotifyWithEvent(competitorStartedEvent)
@@ -61,7 +61,7 @@ func Test_watchStartReferee(t *testing.T) {
 		}
 		maxStartDelta := time.Second
 
-		referee := newWatchStartReferee(rootObserver, maxStartDelta)
+		referee := newObserverStartReferee(rootObserver, maxStartDelta)
 
 		referee.NotifyWithEvent(startAssignEvent)
 
@@ -80,13 +80,13 @@ func Test_watchStartReferee(t *testing.T) {
 		rootObserver := mock_observer.NewMockObserver(mockCtrl)
 		maxStartDelta := time.Second
 
-		referee := newWatchStartReferee(rootObserver, maxStartDelta)
+		referee := newObserverStartReferee(rootObserver, maxStartDelta)
 
 		referee.NotifyWithEvent(startAssignEvent)
 	})
 }
 
-func Test_watchFinishReferee(t *testing.T) {
+func Test_observeFinishReferee(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -104,7 +104,7 @@ func Test_watchFinishReferee(t *testing.T) {
 		rootObserver := mock_observer.NewMockObserver(mockCtrl)
 		var lapsCount uint32 = 3
 
-		referee := newWatchFinishReferee(rootObserver, lapsCount)
+		referee := newObserveFinishReferee(rootObserver, lapsCount)
 
 		referee.NotifyWithEvent(event.Event{ID: event.CompetitorStarted})
 
@@ -126,7 +126,7 @@ func Test_watchFinishReferee(t *testing.T) {
 
 		var lapsCount uint32 = 3
 
-		referee := newWatchFinishReferee(rootObserver, lapsCount)
+		referee := newObserveFinishReferee(rootObserver, lapsCount)
 
 		referee.NotifyWithEvent(event.Event{ID: event.CompetitorStarted})
 		referee.NotifyWithEvent(event.Event{ID: event.CompetitorDisqualified})
@@ -143,7 +143,7 @@ func Test_watchFinishReferee(t *testing.T) {
 
 		var lapsCount uint32 = 3
 
-		referee := newWatchFinishReferee(rootObserver, lapsCount)
+		referee := newObserveFinishReferee(rootObserver, lapsCount)
 
 		referee.NotifyWithEvent(event.Event{ID: event.CompetitorStarted})
 		referee.NotifyWithEvent(event.Event{ID: event.CompetitorCannotContinue})

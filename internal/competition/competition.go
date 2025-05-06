@@ -9,27 +9,26 @@ import (
 	"github.com/AleksandrMatsko/yadro-biathlon/internal/event"
 )
 
-// Biathlon competition.
+// Biathlon represents biathlon competition, that handles incoming events.
 type Biathlon struct {
 	rules    rules
 	observer Observer
 }
 
 // NewBiathlon creates new Biathlon with given config and observer.
+// Use Observer if you need custom events handling.
+// Biathlon will log received events to stdout.
 func NewBiathlon(conf config.BiathlonCompetition, observer Observer) (*Biathlon, error) {
 	competitionRules, err := fromConfig(conf)
 	if err != nil {
 		return nil, fmt.Errorf("bad config %w", err)
 	}
 
-	composed := NewComposed().
-		AddObservers(newLogger(), observer)
-
-	biathlonReferees := newReferees(competitionRules, composed)
+	biathlonReferees := newReferees(competitionRules, observer)
 
 	return &Biathlon{
 		rules:    competitionRules,
-		observer: composed.AddObservers(biathlonReferees),
+		observer: NewComposedObserver().AddObservers(observer, biathlonReferees),
 	}, nil
 }
 

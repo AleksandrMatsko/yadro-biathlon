@@ -7,15 +7,22 @@ import (
 	"github.com/AleksandrMatsko/yadro-biathlon/internal/event"
 )
 
-type shootingReporterState uint8
+type shootingReporterCompetitorState uint8
 
 const (
-	runningMainLap shootingReporterState = iota
+	runningMainLap shootingReporterCompetitorState = iota
 	shooting
 	runningPenaltyLaps
 	ended
 )
 
+// shootingReporter is responsible for calculating several values:
+//   - total number of hit targets;
+//   - total time spent on penalty laps;
+//   - average speed on penalty laps.
+//
+// Penalty laps calculations is here because, penalty laps count depends on
+// the amount of not hit targets on the firing range.
 type shootingReporter struct {
 	hitTargetsOnCurrentFireRange map[string]struct{}
 	firingLinesCount             uint32
@@ -29,7 +36,7 @@ type shootingReporter struct {
 	timeSpentOnPenaltyLaps time.Duration
 	enterPenaltyLap        time.Time
 
-	state shootingReporterState
+	state shootingReporterCompetitorState
 }
 
 func newShootingReporter(firingLinesCount uint32, penaltyLapLen uint32) *shootingReporter {

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_fromConfig(t *testing.T) {
+func Test_rules_fromConfig(t *testing.T) {
 	t.Run("with bad start delta", func(t *testing.T) {
 		conf := config.BiathlonCompetition{
 			Laps:       2,

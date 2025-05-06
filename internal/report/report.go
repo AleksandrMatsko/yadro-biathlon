@@ -1,3 +1,4 @@
+// report package contains types for generating final report.
 package report
 
 import (
@@ -68,7 +69,7 @@ func (report Report) Sort() {
 
 type reportRecord struct {
 	totalTime    time.Duration
-	finalState   totalTimeState
+	finalState   totalTimeReporterCompetitorState
 	competitorID string
 	mainLapsInfo []mainLapInfo
 	shootingInfo shootingInfo

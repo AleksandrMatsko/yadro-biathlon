@@ -10,28 +10,34 @@ type Observer interface {
 	NotifyWithEvent(event.Event)
 }
 
-// Composed - is an Observer, that can contain several observers.
-type Composed struct {
+// ComposedObserver - is an Observer, that can contain several observers.
+type ComposedObserver struct {
 	observers []Observer
 }
 
-// NewComposed - creates new Composed Observer.
-func NewComposed() *Composed {
-	return &Composed{
+// NewComposedObserver - creates new ComposedObserver.
+func NewComposedObserver() *ComposedObserver {
+	return &ComposedObserver{
 		observers: make([]Observer, 0),
 	}
 }
 
 // NotifyWithEvent call this method for each Observer.
-func (c *Composed) NotifyWithEvent(e event.Event) {
+func (c *ComposedObserver) NotifyWithEvent(e event.Event) {
 	for _, observer := range c.observers {
 		observer.NotifyWithEvent(e)
 	}
 }
 
-// AddObservers add passed observers to Composed Observer,
+// AddObservers add passed observers to ComposedObserver,
 // so they also will be notified when event is got.
-func (c *Composed) AddObservers(observer ...Observer) *Composed {
-	c.observers = append(c.observers, observer...)
+// ComposedObserver will not add nil observer.
+func (c *ComposedObserver) AddObservers(observers ...Observer) *ComposedObserver {
+	for i := range observers {
+		if observers[i] != nil {
+			c.observers = append(c.observers, observers[i])
+		}
+	}
+
 	return c
 }

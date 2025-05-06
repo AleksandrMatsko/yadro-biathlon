@@ -8,6 +8,7 @@ import (
 	"github.com/AleksandrMatsko/yadro-biathlon/internal/event/parser"
 )
 
+// lapsTimeReporter is responsible for calculating time and speed for each main lap.
 type lapsTimeReporter struct {
 	lapsCompleted uint32
 	lapStart      time.Time
@@ -62,6 +63,13 @@ func (info mainLapInfo) String() string {
 	return fmt.Sprintf("{%s, %.3f}", formatDuration(info.Interval), info.Speed)
 }
 
+// GetLapTimesAndSpeed returns time spent and speed for each lap.
+//
+// Note that time for the first lap is time interval between scheduled start
+// and end of the first lap. For other laps lap time is time interval between
+// end of previous lap and end of current lap.
+//
+// Also note that lap time includes time spent on penalty laps.
 func (lt *lapsTimeReporter) GetLapTimesAndSpeed() []mainLapInfo {
 	result := make([]mainLapInfo, len(lt.lapTimes))
 	for i, interval := range lt.lapTimes {
