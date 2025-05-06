@@ -26,7 +26,7 @@ func newLapsTimeReporter(laps uint32, lapLen uint32) *lapsTimeReporter {
 }
 
 func (lt *lapsTimeReporter) NotifyWithEvent(e event.Event) {
-	if lt.lapsCompleted == uint32(len(lt.lapTimes)) {
+	if lt.stop {
 		return
 	}
 
@@ -41,6 +41,10 @@ func (lt *lapsTimeReporter) NotifyWithEvent(e event.Event) {
 		lt.lapsCompleted += 1
 
 		lt.lapStart = e.Time
+
+		if lt.lapsCompleted == uint32(len(lt.lapTimes)) {
+			lt.stop = true
+		}
 
 		return
 	}

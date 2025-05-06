@@ -60,12 +60,12 @@ func (r *observeStartReferee) NotifyWithEvent(e event.Event) {
 		return
 	}
 
-	if !r.started && e.ID == event.StartTimeAssignment {
+	if e.ID == event.StartTimeAssignment {
 		r.assignedStartTime, _ = parser.ParseTime(e.Extra)
 		return
 	}
 
-	if !r.started && e.ID == event.CompetitorStarted {
+	if e.ID == event.CompetitorStarted {
 		r.started = true
 
 		actualDelta := e.Time.Sub(r.assignedStartTime)

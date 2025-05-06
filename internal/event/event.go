@@ -38,7 +38,7 @@ type Event struct {
 	Extra string
 }
 
-// ValidIncomingEventID checks if the given value is a valid event id.
+// ValidIncomingEventID checks if the given value is a valid incoming event id.
 func ValidIncomingEventID(candidate uint8) bool {
 	return candidate >= uint8(CompetitorRegistration) && candidate <= uint8(CompetitorCannotContinue)
 }
@@ -46,14 +46,14 @@ func ValidIncomingEventID(candidate uint8) bool {
 // TimeFormat use to parse.
 const TimeFormat = "15:04:05.000"
 
-// FormatTime according to TimeFormat.
-func (e Event) FormatTime() string {
+// formatTime according to TimeFormat.
+func (e Event) formatTime() string {
 	return fmt.Sprintf("[%s]", e.Time.Format(TimeFormat))
 }
 
 // String method to implement Stringer interface.
 func (e Event) String() string {
-	formattedTime := e.FormatTime() + " "
+	formattedTime := e.formatTime() + " "
 
 	eventMsg := "unknown event"
 	switch e.ID {
@@ -88,6 +88,7 @@ func (e Event) String() string {
 	return formattedTime + eventMsg
 }
 
+// AvailableTargets is a set of available targets, that can be hit.
 var AvailableTargets = map[string]struct{}{
 	"1": {},
 	"2": {},
