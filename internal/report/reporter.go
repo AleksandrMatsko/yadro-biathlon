@@ -6,6 +6,7 @@ import (
 )
 
 // Reporter is used to create Report with aggregated data based on occurred events.
+// Reporter implements competition.Observer so can be used to observe and handle events.
 type Reporter struct {
 	conf      config.BiathlonCompetition
 	reporters map[string]*competitorReporter
@@ -34,7 +35,7 @@ func (r *Reporter) NotifyWithEvent(incomingEvent event.Event) {
 	reporter.NotifyWithEvent(incomingEvent)
 }
 
-// MakeReport creates report from previously observed events.
+// MakeReport creates Report from previously observed events.
 func (r *Reporter) MakeReport() Report {
 	records := make([]reportRecord, 0, len(r.reporters))
 	for competitorID, reporter := range r.reporters {

@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLines(t *testing.T) {
+func Test_Lines(t *testing.T) {
 	expectedLines := []string{
 		"abra",
 		"cadabra",
@@ -39,7 +39,7 @@ func TestLines(t *testing.T) {
 	assert.Nil(t, retErrFunc())
 }
 
-func TestParsedLines(t *testing.T) {
+func Test_ParsedLines(t *testing.T) {
 	t.Run("with valid events", func(t *testing.T) {
 		t.Parallel()
 
@@ -125,7 +125,7 @@ func TestParsedLines(t *testing.T) {
 	})
 }
 
-func TestParseSingleLine(t *testing.T) {
+func Test_ParseSingleLine(t *testing.T) {
 	t.Run("with less parameters than need", func(t *testing.T) {
 		t.Parallel()
 

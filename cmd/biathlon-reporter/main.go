@@ -8,14 +8,15 @@ import (
 
 	"github.com/AleksandrMatsko/yadro-biathlon/internal/competition"
 	"github.com/AleksandrMatsko/yadro-biathlon/internal/config"
+	"github.com/AleksandrMatsko/yadro-biathlon/internal/event"
 	"github.com/AleksandrMatsko/yadro-biathlon/internal/event/parser"
 	"github.com/AleksandrMatsko/yadro-biathlon/internal/report"
 )
 
 var (
-	configFileNameFlag     = flag.String("config", "", "Path to configuration file")
+	configFilePathFlag     = flag.String("config", "", "Path to configuration file")
 	printConfigFlag        = flag.Bool("print-config", false, "Print current config to stdout")
-	incomingEventsFileName = flag.String("events", "", "Path to events file")
+	incomingEventsFilePath = flag.String("events", "", "Path to events file")
 	reportFilePathFlag     = flag.String("report", "report.txt", "Path of file to save report")
 )
 
@@ -34,12 +35,12 @@ func main() {
 }
 
 func makeReport() error {
-	if *configFileNameFlag == "" {
+	if *configFilePathFlag == "" {
 		return errNoConfigFile
 	}
 
 	conf := config.BiathlonCompetition{}
-	err := config.Read(*configFileNameFlag, &conf)
+	err := config.Read(*configFilePathFlag, &conf)
 	if err != nil {
 		return fmt.Errorf("read config: %w", err)
 	}
@@ -48,18 +49,24 @@ func makeReport() error {
 		config.Print(conf)
 	}
 
-	if *incomingEventsFileName == "" {
+	if *incomingEventsFilePath == "" {
 		return errNoEventsFile
 	}
 
 	reporter := report.NewReporter(conf)
 
-	biathlon, err := competition.NewBiathlon(conf, reporter)
+	biathlon, err := competition.NewBiathlon(
+		conf,
+		competition.NewComposedObserver().AddObservers(
+			event.NewLogger(os.Stdout),
+			reporter,
+		),
+	)
 	if err != nil {
 		return fmt.Errorf("failed to create biathlon competition: %w", err)
 	}
 
-	file, err := os.Open(*incomingEventsFileName)
+	file, err := os.Open(*incomingEventsFilePath)
 	if err != nil {
 		return fmt.Errorf("open events file: %w", err)
 	}
@@ -84,7 +91,7 @@ func makeReport() error {
 
 	reportFile, err := os.OpenFile(*reportFilePathFlag, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 0o666)
 	if err != nil {
-		return fmt.Errorf("open file for report: '%s': %w", *incomingEventsFileName, err)
+		return fmt.Errorf("open file for report: '%s': %w", *reportFilePathFlag, err)
 	}
 	defer reportFile.Close()
 

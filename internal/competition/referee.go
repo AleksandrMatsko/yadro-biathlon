@@ -7,6 +7,7 @@ import (
 	"github.com/AleksandrMatsko/yadro-biathlon/internal/event/parser"
 )
 
+// referees is responsible for generating outgoing events of different types.
 type referees struct {
 	rules              rules
 	root               Observer
@@ -28,31 +29,33 @@ func (r *referees) NotifyWithEvent(e event.Event) {
 	}
 
 	if e.ID == event.CompetitorRegistration {
-		obs = NewComposed().
+		obs = NewComposedObserver().
 			AddObservers(
-				newWatchStartReferee(r.root, r.rules.MaxStartDelta),
-				newWatchFinishReferee(r.root, r.rules.Laps))
+				newObserverStartReferee(r.root, r.rules.MaxStartDelta),
+				newObserveFinishReferee(r.root, r.rules.Laps))
 		r.competitorReferees[e.CompetitorID] = obs
 	}
 
 	obs.NotifyWithEvent(e)
 }
 
-type watchStartReferee struct {
+// observeStartReferee is responsible for checking competitor disqualification
+// because of starting too late.
+type observeStartReferee struct {
 	root              Observer
 	maxStartDelta     time.Duration
 	started           bool
 	assignedStartTime time.Time
 }
 
-func newWatchStartReferee(rootObserver Observer, maxStartDelta time.Duration) *watchStartReferee {
-	return &watchStartReferee{
+func newObserverStartReferee(rootObserver Observer, maxStartDelta time.Duration) *observeStartReferee {
+	return &observeStartReferee{
 		root:          rootObserver,
 		maxStartDelta: maxStartDelta,
 	}
 }
 
-func (r *watchStartReferee) NotifyWithEvent(e event.Event) {
+func (r *observeStartReferee) NotifyWithEvent(e event.Event) {
 	if r.started {
 		return
 	}
@@ -76,25 +79,26 @@ func (r *watchStartReferee) NotifyWithEvent(e event.Event) {
 	}
 }
 
-type watchFinishState string
+type competitorState string
 
 const (
-	notStarted     watchFinishState = "NotStarted"
-	running        watchFinishState = "Running"
-	disqualified   watchFinishState = "Disqualified"
-	cannotContinue watchFinishState = "CannotContinue"
-	finished       watchFinishState = "Finished"
+	notStarted     competitorState = "NotStarted"
+	running        competitorState = "Running"
+	disqualified   competitorState = "Disqualified"
+	cannotContinue competitorState = "CannotContinue"
+	finished       competitorState = "Finished"
 )
 
-type watchFinishReferee struct {
+// observeFinishReferee is responsible for checking competitor race finish.
+type observeFinishReferee struct {
 	root            Observer
 	lapsCount       uint32
 	lapsCompleted   uint32
-	competitorState watchFinishState
+	competitorState competitorState
 }
 
-func newWatchFinishReferee(rootObserver Observer, laps uint32) *watchFinishReferee {
-	return &watchFinishReferee{
+func newObserveFinishReferee(rootObserver Observer, laps uint32) *observeFinishReferee {
+	return &observeFinishReferee{
 		root:            rootObserver,
 		lapsCount:       laps,
 		lapsCompleted:   0,
@@ -102,7 +106,7 @@ func newWatchFinishReferee(rootObserver Observer, laps uint32) *watchFinishRefer
 	}
 }
 
-func (r *watchFinishReferee) NotifyWithEvent(e event.Event) {
+func (r *observeFinishReferee) NotifyWithEvent(e event.Event) {
 	if r.competitorState == notStarted && e.ID == event.CompetitorStarted {
 		r.competitorState = running
 		return

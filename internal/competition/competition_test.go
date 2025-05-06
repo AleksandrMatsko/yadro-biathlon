@@ -11,7 +11,7 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-func TestHandleEvent(t *testing.T) {
+func Test_Biathlon_HandleEvent(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
@@ -20,18 +20,27 @@ func TestHandleEvent(t *testing.T) {
 		StartDelta: "00:01:30",
 	}
 
-	observer := mock_observer.NewMockObserver(mockCtrl)
-
-	biathlon, err := NewBiathlon(conf, observer)
-	assert.Nil(t, err)
-
 	givenEvent := event.Event{
 		Time:         time.Date(0, time.January, 1, 1, 1, 1, 0, time.UTC),
 		ID:           event.CompetitorRegistration,
 		CompetitorID: "vasya",
 	}
 
-	observer.EXPECT().NotifyWithEvent(givenEvent).Times(1)
+	t.Run("with non nil observer", func(t *testing.T) {
+		observer := mock_observer.NewMockObserver(mockCtrl)
 
-	biathlon.HandleEvent(givenEvent)
+		biathlon, err := NewBiathlon(conf, observer)
+		assert.Nil(t, err)
+
+		observer.EXPECT().NotifyWithEvent(givenEvent).Times(1)
+
+		biathlon.HandleEvent(givenEvent)
+	})
+
+	t.Run("with nil observer", func(t *testing.T) {
+		biathlon, err := NewBiathlon(conf, nil)
+		assert.Nil(t, err)
+
+		biathlon.HandleEvent(givenEvent)
+	})
 }

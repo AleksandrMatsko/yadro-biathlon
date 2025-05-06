@@ -7,18 +7,19 @@ import (
 	"github.com/AleksandrMatsko/yadro-biathlon/internal/event/parser"
 )
 
-type totalTimeState string
+type totalTimeReporterCompetitorState string
 
 const (
-	initial     totalTimeState = "Initial"
-	running     totalTimeState = "Running"
-	notStarted  totalTimeState = "NotStarted"
-	notFinished totalTimeState = "NotFinished"
-	finished    totalTimeState = "Finished"
+	initial     totalTimeReporterCompetitorState = "Initial"
+	running     totalTimeReporterCompetitorState = "Running"
+	notStarted  totalTimeReporterCompetitorState = "NotStarted"
+	notFinished totalTimeReporterCompetitorState = "NotFinished"
+	finished    totalTimeReporterCompetitorState = "Finished"
 )
 
+// totalTimeReporter calculates total time of single competitor.
 type totalTimeReporter struct {
-	state totalTimeState
+	state totalTimeReporterCompetitorState
 	start time.Time
 	end   time.Time
 }
@@ -57,7 +58,10 @@ func (tt *totalTimeReporter) NotifyWithEvent(e event.Event) {
 	}
 }
 
-func (tt *totalTimeReporter) GetTotalTime() (time.Duration, totalTimeState) {
+// GetTotalTime returns:
+//   - Calculated total time (time interval between scheduled start for competitor and time of completing last lap).
+//   - Final state of the competitor (on of: notStarted, notFinished, finished).
+func (tt *totalTimeReporter) GetTotalTime() (time.Duration, totalTimeReporterCompetitorState) {
 	if tt.state == finished {
 		return tt.end.Sub(tt.start), finished
 	}
