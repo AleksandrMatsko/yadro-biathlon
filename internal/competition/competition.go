@@ -17,7 +17,6 @@ type Biathlon struct {
 
 // NewBiathlon creates new Biathlon with given config and observer.
 // Use Observer if you need custom events handling.
-// Biathlon will log received events to stdout.
 func NewBiathlon(conf config.BiathlonCompetition, observer Observer) (*Biathlon, error) {
 	competitionRules, err := fromConfig(conf)
 	if err != nil {

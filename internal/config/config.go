@@ -15,7 +15,7 @@ type BiathlonCompetition struct {
 	LapLen uint32 `json:"lapLen"`
 	// PenaltyLen - length of each penalty lap.
 	PenaltyLen uint32 `json:"penaltyLen"`
-	// FiringLines - number of firing lines per lap.
+	// FiringLines - number of firing lines in race.
 	FiringLines uint32 `json:"firingLines"`
 	// Start - planned start time for the first competitor.
 	Start string `json:"start"`

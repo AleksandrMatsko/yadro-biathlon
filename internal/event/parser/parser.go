@@ -14,7 +14,7 @@ import (
 )
 
 // Lines returns sequence of lines from the reader and function
-// that returns any occurred error. After iterration over sequence is completed
+// that returns any occurred error. After iteration over sequence is completed
 // call function to check error.
 func Lines(r io.Reader) (iter.Seq[string], func() error) {
 	scanner := bufio.NewScanner(r)
